@@ -6,6 +6,26 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
+}
+
+model Tags {
+  id       String   @id @default(auto()) @map("_id") @db.ObjectId
+  name     String
+  color    String
+  tasksIds String[] @db.ObjectId
+  Tasks    Tasks[]  @relation(fields: [tasksIds], references: [id])
+}
+
+model Tasks {
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
+  name    String
+  done    Boolean @default(false)
+  rawText String
+  time String?
+  tagsIds String[]  @db.ObjectId
+  createdAt DateTime @default(now())
+  updateAt DateTime @default(now())
+  tags    Tags[]  @relation(fields: [tagsIds], references: [id])
 }
